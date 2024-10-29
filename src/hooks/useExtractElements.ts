@@ -4,51 +4,60 @@ import { generateRandomId } from "../utils";
 
 type CharEntry = readonly [string, { char: string; isPeriodicElement: boolean }];
 
-type Options = { extractAllElements: boolean };
+type Options = {
+  extractAllElements: boolean;
+};
 
-export const useExtractElements = (options?: Options) => {
+const defaultOptions: Options = {
+  extractAllElements: false,
+};
+
+export const useExtractElements = (options = defaultOptions) => {
   const [charsEntries, setCharsEntries] = useState<CharEntry[]>([]);
 
-  function extractPeriodicElements(v: string) {
+  function extractElementsEntries(input: string) {
     let idxChar = 0;
-    //TODO: better variable naming
-    let hasOneElementBeenFound = false;
-    const arr = [] as { char: string; isPeriodicElement: boolean }[];
+    let foundEl = false;
+    const arr = [] as CharEntry[1][];
 
-    while (idxChar < v.length) {
-      const char = v.charAt(idxChar);
-      const els = elements.filter((el) => el.toLowerCase().startsWith(char));
+    while (idxChar < input.length) {
+      const char = input.charAt(idxChar);
+      const matchingEls = elements
+        .map((v) => v.toLowerCase())
+        .filter((el) => el.startsWith(char));
 
-      if (els.length <= 0) {
+      if (matchingEls.length <= 0 || (!options.extractAllElements && foundEl)) {
         arr.push({ char, isPeriodicElement: false });
         idxChar++;
         continue;
       }
 
-      const nextChar = v.charAt(idxChar + 1).toLowerCase();
+      foundEl = true;
+      const nextChar = input.charAt(idxChar + 1);
       const concatChar = char.concat(nextChar);
-      const el = els.find((el) => el.toLowerCase() === concatChar);
+      const matchingEl = matchingEls.find((el) => el === concatChar);
 
-      if (el && (options?.extractAllElements || !hasOneElementBeenFound)) {
-        arr.push({ char: concatChar, isPeriodicElement: true });
-        idxChar += 2;
-        hasOneElementBeenFound = true;
-      } else {
+      if (!matchingEl && !matchingEls.includes(char)) {
         arr.push({ char, isPeriodicElement: false });
         idxChar++;
+        continue;
       }
+
+      const c = matchingEl ? concatChar : char;
+      arr.push({ char: c, isPeriodicElement: true });
+      idxChar += c.length;
     }
 
     return arr;
   }
 
-  function handle(v: string) {
-    const entriesWithIds = extractPeriodicElements(v.toLowerCase())
+  function handleChange(input: string) {
+    const entriesWithIds = extractElementsEntries(input.toLowerCase())
       .map((v) => ({ ...v, id: generateRandomId() }))
       .map(({ id, ...rest }) => [id, rest] as const);
 
     setCharsEntries(entriesWithIds);
   }
 
-  return [charsEntries, handle] as const;
+  return [charsEntries, handleChange] as const;
 };
