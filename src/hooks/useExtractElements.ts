@@ -4,13 +4,9 @@ import { generateRandomId } from "../utils";
 
 type CharEntry = readonly [string, { char: string; isPeriodicElement: boolean }];
 
-type Options = {
-  extractAllElements: boolean;
-};
+type Options = { extractAllElements: boolean };
 
-const defaultOptions: Options = {
-  extractAllElements: false,
-};
+const defaultOptions: Options = { extractAllElements: false };
 
 export const useExtractElements = (options = defaultOptions) => {
   const [charsEntries, setCharsEntries] = useState<CharEntry[]>([]);
