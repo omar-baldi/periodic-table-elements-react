@@ -4,3 +4,25 @@
   padding: 2rem;
   text-align: center;
 }
+
+.wrapperText {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  & > span {
+    font-size: 75px;
+  }
+}
+
+.periodicElement {
+  height: 100px;
+  background-color: #0f5135;
+  aspect-ratio: 1;
+  color: #fff;
+  font-size: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: capitalize;
+}
